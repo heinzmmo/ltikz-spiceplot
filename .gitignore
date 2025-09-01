@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+.Python
+
+# Virtual Environment
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db
+.DS_Store?
+
+# Project specific
+sandbox/
+#sandbox/experiments.py
+#sandbox/temp*
+#sandbox/sample_data/*.txt
+#sandbox/output/
+
+# Output files
+*.pdf
+*.jpg
+*.png
+
+# Logs
+*.log
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Temporary files
+tmp/
+temp/
