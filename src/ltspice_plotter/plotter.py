@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from txt_parser import get_signal_info
+from .txt_parser import get_signal_info
 
 def plot_all_singls(simulation_data, output_file=None):
     """

@@ -4,8 +4,8 @@
 import argparse
 import sys 
 
-from plotter import plot_all_singls
-from txt_parser import parse_ltspice_txt
+from .plotter import plot_all_singls
+from .txt_parser import parse_ltspice_txt
 
 def main():
     """
