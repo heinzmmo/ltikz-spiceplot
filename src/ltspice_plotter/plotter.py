@@ -1,16 +1,21 @@
 import matplotlib.pyplot as plt
-from txt_parser import parse_ltspice_txt, get_signal_info
+from txt_parser import get_signal_info
 
-def plot_all_singls(filename, output_file=None):
+def plot_all_singls(simulation_data, output_file=None):
     """
     Create basic plot of all signals 
 
     Arg: 
-        filename (str): Path to to LTspice .txt file 
+        simulation_data (pd.DataFrame): Simulation data
+        output_file (str): Output file name (including data type)
     """
 
-    simulation_data = parse_ltspice_txt(filename)
     info = get_signal_info(simulation_data)  # Dict containing name of columns
+
+    # Check whats signals we have
+    has_voltage = len(info['voltage_signals']) > 0
+    has_current = len(info['current_signals']) > 0
+
     
     # Plot setup
     plt.rcParams.update({
@@ -20,27 +25,40 @@ def plot_all_singls(filename, output_file=None):
     })
 
     fig, ax1 = plt.subplots()
-
-    ## TODO: Find out if LTspice allways outputs in 10^0 -- I think pandas does convert in 10^0
+    ax2 = None
     ax1.set_xlabel(r'$t\mathrm{/s}$')
-    ax1.set_ylabel(r'$U\mathrm{/V}$')
-    ax2 = ax1.twinx()
-    ax2.set_ylabel(r'$I\mathrm{/A}$')
-    ax1.set_prop_cycle('color', ['b', 'g', 'c', 'm'])
-    ax2.set_prop_cycle('color', ['r', 'y', 'k', 'm'])
-    
-    # Plot all voltages
-    for voltage in info['voltage_signals']:
-        ax1.plot(simulation_data[info['time_column']], simulation_data[voltage], label=voltage)
 
-    # Plot all currents
-    for current in info['current_signals']:
-        ax2.plot(simulation_data[info['time_column']], simulation_data[current], label=current)
-   
-    # Combine the legends
-    lines1, labels1 = ax1.get_legend_handles_labels()
-    lines2, labels2 = ax2.get_legend_handles_labels()
-    ax1.legend(lines1 + lines2, labels1 + labels2, loc='best')
+    if has_voltage:
+        ax1.set_ylabel(r'$U\mathrm{/V}$')
+
+        ax1.set_prop_cycle('color', ['b', 'g', 'c', 'm'])
+        # Plot all voltages
+        for voltage in info['voltage_signals']:
+            ax1.plot(simulation_data[info['time_column']], simulation_data[voltage], label=voltage)
+
+
+    if has_current:
+        if has_voltage:
+            ax2 = ax1.twinx() # Seconardy y-axis only if data has voltage and current signals
+            current_axis = ax2
+        else:
+            current_axis = ax1
+    
+        current_axis.set_ylabel(r'$I\mathrm{/A}$')
+        current_axis.set_prop_cycle('color', ['r', 'y', 'k', 'm'])
+        # Plot all currents
+        for current in info['current_signals']:
+            current_axis.plot(simulation_data[info['time_column']], simulation_data[current], label=current)
+
+    # Legend
+    if has_voltage and has_current and ax2 is not None:
+        # Combine the legends
+        lines1, labels1 = ax1.get_legend_handles_labels()
+        lines2, labels2 = ax2.get_legend_handles_labels()
+        ax1.legend(lines1 + lines2, labels1 + labels2, loc='best')
+    elif has_voltage or has_current: 
+        ax1.legend(loc='best')
+
 
     if output_file:
         plt.savefig(output_file, dpi=300, bbox_inches='tight') 
