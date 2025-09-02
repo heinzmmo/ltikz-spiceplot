@@ -1,7 +1,6 @@
 """
 LTspice .txt parser module
 """
-from time import time
 import pandas as pd
 from pathlib import Path
 
@@ -14,7 +13,7 @@ def parse_ltspice_txt(filename):
         filename (str): Path to to LTspice .txt file 
 
     Return: 
-        pd.DataFrame(): Pared simulation data
+        pd.DataFrame(): Parsed simulation data
 
     Raises:
         FileNotFoundError: If file doesn't exist

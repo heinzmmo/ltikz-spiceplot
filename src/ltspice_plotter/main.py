@@ -6,6 +6,7 @@ import sys
 
 from .plotter import plot_all_singls
 from .txt_parser import parse_ltspice_txt
+from .utils import filter_data_frame
 
 def main():
     """
@@ -14,12 +15,20 @@ def main():
 
     parser = argparse.ArgumentParser(
         description="Plotting LTspice simulation data",
-        epilog="Example: ltspice-plot data.txt -o plot.pdf"
+        epilog="Example: ltspice-plot data.txt -s 'I(R2)' -o plot.pdf"
     )
 
     parser.add_argument(
         "filepath",
         help="Path to .txt file, created by LTspice"
+    )
+
+    parser.add_argument(
+        "-s",
+        "--signals",
+        default=None,
+        nargs='*',
+        help="Name of signals to plot. Must be identical to LTspice singal names"
     )
 
     parser.add_argument(
@@ -47,10 +56,19 @@ def main():
 
     try:
         simulation_data = parse_ltspice_txt(args.filepath)
-        plot_all_singls(simulation_data, args.output)
+        
+        if args.signals is not None:
+            filtered_data = filter_data_frame(simulation_data, args.signals)         
+            plot_all_singls(filtered_data, args.output)
+        else:
+            plot_all_singls(simulation_data, args.output)
 
     # Error handeling for main.py
     except FileNotFoundError as e:
+        print(f"Error: {e}")
+        sys.exit(1)
+
+    except ValueError as e:
         print(f"Error: {e}")
         sys.exit(1)
 
