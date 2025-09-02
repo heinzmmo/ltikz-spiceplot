@@ -1,12 +1,13 @@
 import matplotlib.pyplot as plt
 from .txt_parser import get_signal_info
 
-def plot_all_singls(simulation_data, output_file=None):
+def plot_all_singls(simulation_data, fig_title=None, output_file=None):
     """
     Create basic plot of all signals 
 
     Arg: 
         simulation_data (pd.DataFrame): Simulation data
+        fig_title (str): Figure title
         output_file (str): Output file name (including data type)
     """
 
@@ -59,6 +60,9 @@ def plot_all_singls(simulation_data, output_file=None):
     elif has_voltage or has_current: 
         ax1.legend(loc='best')
 
+    # Figure titel
+    if fig_title:
+        ax1.set_title(label=rf'{fig_title}')
 
     if output_file:
         plt.savefig(output_file, dpi=300, bbox_inches='tight') 

@@ -39,6 +39,14 @@ def main():
     )
 
     parser.add_argument(
+        "-t",
+        "--title",
+        default=None,
+        metavar='FIG TITLE',
+        help="Title of the figure/plot"
+    )
+
+    parser.add_argument(
         "-o",
         "--output",
         default=None,
@@ -70,9 +78,9 @@ def main():
         
         if args.signals is not None:
             filtered_data = filter_data_frame(simulation_data, args.signals)         
-            plot_all_singls(filtered_data, args.output)
+            plot_all_singls(filtered_data,args.title, args.output)
         else:
-            plot_all_singls(simulation_data, args.output)
+            plot_all_singls(simulation_data, args.title, args.output)
 
     # Error handeling for main.py
     except FileNotFoundError as e:
