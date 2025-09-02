@@ -22,6 +22,13 @@ def main():
         "filepath",
         help="Path to .txt file, created by LTspice"
     )
+    
+    parser.add_argument(
+        "-a",
+        "--available",
+        action='store_true',
+        help="Print available singal names"
+    )
 
     parser.add_argument(
         "-s",
@@ -37,13 +44,6 @@ def main():
         default=None,
         metavar='FILE',
         help="Output filename. Supported formats: .pdf, .jpg, .jpeg, .png"
-    )
-
-    parser.add_argument(
-        "-a",
-        "--available",
-        action='store_true',
-        help="Print available singal names"
     )
 
     parser.add_argument(
