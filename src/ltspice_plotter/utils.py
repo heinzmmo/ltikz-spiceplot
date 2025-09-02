@@ -43,12 +43,12 @@ def signal_name_tex(signal_name):
 
     if signal_name.startswith('V'):
         index = signal_name[1:].strip("()")
-        label_tex = '$V_{' + index + '}$'
+        label_tex = r'$V_{\mathrm{' + index + '}}$'
         return label_tex
 
     elif signal_name.startswith('I'):
         index = signal_name[1:].strip("()")
-        label_tex = '$I_{' + index[0] + '_{' + index[1:] + '}' + '}$'
+        label_tex = r'$I_{\mathrm{' + index[0] + '_{' + index[1:] + '}}}$'
         return label_tex
     
     else:
