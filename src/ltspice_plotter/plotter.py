@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 from .txt_parser import get_signal_info
+from .utils import signal_name_tex 
 
 def plot_all_singls(simulation_data, fig_title=None, output_file=None):
     """
@@ -33,10 +34,12 @@ def plot_all_singls(simulation_data, fig_title=None, output_file=None):
         ax1.set_ylabel(r'$U\mathrm{/V}$')
 
         ax1.set_prop_cycle('color', ['b', 'g', 'c', 'm'])
+
         # Plot all voltages
         for voltage in info['voltage_signals']:
-            ax1.plot(simulation_data[info['time_column']], simulation_data[voltage], label=voltage)
-
+            ax1.plot(simulation_data[info['time_column']],
+                     simulation_data[voltage],
+                     label=rf'{signal_name_tex(voltage)}')
 
     if has_current:
         if has_voltage:
@@ -47,9 +50,12 @@ def plot_all_singls(simulation_data, fig_title=None, output_file=None):
     
         current_axis.set_ylabel(r'$I\mathrm{/A}$')
         current_axis.set_prop_cycle('color', ['r', 'y', 'k', 'm'])
+
         # Plot all currents
         for current in info['current_signals']:
-            current_axis.plot(simulation_data[info['time_column']], simulation_data[current], label=current)
+            current_axis.plot(simulation_data[info['time_column']],
+                              simulation_data[current],
+                              label=rf'{signal_name_tex(current)}')
 
     # Legend
     if has_voltage and has_current and ax2 is not None:
