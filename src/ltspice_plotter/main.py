@@ -5,7 +5,7 @@ import argparse
 import sys 
 
 from .plotter import plot_all_singls
-from .txt_parser import parse_ltspice_txt
+from .txt_parser import parse_ltspice_txt, get_all_signals
 from .utils import filter_data_frame
 
 def main():
@@ -40,6 +40,13 @@ def main():
     )
 
     parser.add_argument(
+        "-a",
+        "--available",
+        action='store_true',
+        help="Print available singal names"
+    )
+
+    parser.add_argument(
         "--version",
         action="version",
         version="ltspice-plotter v0.1"
@@ -56,6 +63,10 @@ def main():
 
     try:
         simulation_data = parse_ltspice_txt(args.filepath)
+
+        if args.available is True:
+            print(get_all_signals(simulation_data))
+            sys.exit(0)
         
         if args.signals is not None:
             filtered_data = filter_data_frame(simulation_data, args.signals)         
