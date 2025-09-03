@@ -122,3 +122,32 @@ def get_signal_info(df):
         'data_points': len(df)
     }
 
+
+def get_all_voltage_data(df):
+    """
+    Get all voltage data as one dataFrame (vector)
+
+    Args: 
+        df (pd.DataFrame): Simulation data
+
+    Retuns:
+        dataFrame: DataFrame of all voltage data as vector
+    """
+
+    voltages = get_voltage_signals(df)
+    return pd.concat([df[v] for v in voltages])
+
+
+def get_all_current_data(df):
+    """
+    Get all current data as one dataFrame (vector)
+
+    Args: 
+        df (pd.DataFrame): Simulation data
+
+    Retuns:
+        dataFrame: DataFrame of all current data as vector
+    """
+
+    currents = get_current_signals(df)
+    return pd.concat([df[i] for i in currents])
