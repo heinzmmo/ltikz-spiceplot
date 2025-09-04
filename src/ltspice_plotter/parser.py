@@ -108,8 +108,10 @@ def get_current_signals(df):
     Return:
         list: List of all current column names (V(xxx))
     """
-    
-    return [col for col in df.columns if col.startswith('I(')]
+    # TODO check 
+    # Ix: IC model internal current
+    return [col for col in df.columns
+            if col.startswith('I(') or col.startswith('Ix(')]
 
 
 def get_all_signals(df):

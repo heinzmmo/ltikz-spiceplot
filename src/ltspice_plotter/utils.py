@@ -37,22 +37,24 @@ def signal_name_tex(signal_name):
     Return: 
         label_tex (str): singal label in LaTeX math format
     """
-    index = []
-    label_tex = []
 
+    index = []
     if signal_name.startswith('V'):
         index = signal_name[1:].strip("()")
         # For when net label is i.e. Vcc -> LTspice signal name: V(vcc)
         if index.startswith('v'):
             index = index[1:]
 
-        label_tex = r'$V_{\mathrm{' + index + '}}$'
-        return label_tex
+        return r'$V_{\mathrm{' + index + '}}$'
 
     elif signal_name.startswith('I'):
+        # Ix(u.:.) currents
+        if signal_name[1] == 'x':
+            index = signal_name[1:]
+            return r'$I_{\mathrm{' + index + '}}$'
+
         index = signal_name[1:].strip("()")
-        label_tex = r'$I_{\mathrm{' + index[0] + '_{' + index[1:] + '}}}$'
-        return label_tex
+        return r'$I_{\mathrm{' + index[0] + '_{' + index[1:] + '}}}$'
     
     else:
         return signal_name
