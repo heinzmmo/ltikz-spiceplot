@@ -42,6 +42,10 @@ def signal_name_tex(signal_name):
 
     if signal_name.startswith('V'):
         index = signal_name[1:].strip("()")
+        # For when net label is i.e. Vcc -> LTspice signal name: V(vcc)
+        if index.startswith('v'):
+            index = index[1:]
+
         label_tex = r'$V_{\mathrm{' + index + '}}$'
         return label_tex
 
