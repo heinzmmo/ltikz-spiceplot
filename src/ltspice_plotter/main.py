@@ -34,7 +34,7 @@ def parse_arguments():
         "-s",
         "--signals",
         default=None,
-        nargs='*',
+        nargs='+',
         help="Name of signals to plot. Must be identical to LTspice singal names"
     )
 
