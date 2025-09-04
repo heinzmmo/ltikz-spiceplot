@@ -5,12 +5,12 @@ import argparse
 import sys 
 
 from .plotter import plot_all_singls
-from .txt_parser import parse_ltspice_txt, get_all_signals
+from .parser import parse_ltspice_txt, parse_ltspice_raw, get_all_signals
 from .utils import filter_data_frame
 
-def main():
+def parse_arguments():
     """
-    Main function with CLI-Interface
+    Parse CL arguments
     """
 
     parser = argparse.ArgumentParser(
@@ -60,17 +60,37 @@ def main():
         version="ltspice-plotter v0.1"
     )
 
-    args = parser.parse_args()
+    return parser.parse_args()
 
-    # Validate output format 
-    if args.output is not None:
-        supported_formats = ('.pdf', '.jpg', '.jpeg', '.png')
-        if not args.output.lower().endswith(supported_formats):
-            print(f"Error: Unsupported format. Use: {', '.join(supported_formats)}")
-            sys.exit(1)
+
+def read_simulation_data(filepath_arg:str):
+    if filepath_arg.endswith('.txt'):
+        return parse_ltspice_txt(filepath_arg)
+
+    elif filepath_arg.endswith('.raw'):
+        return parse_ltspice_raw(filepath_arg)
+
+    else:
+        raise ValueError('Unsupported file type. Use .txt or .raw')
+
+
+def validate_output_format(output_arg:str):
+    supported_output_formats = ('.pdf', '.jpg', '.jpeg', '.png')
+    if not output_arg.lower().endswith(supported_output_formats):
+        raise ValueError(f"Unsupported format. Use: {', '.join(supported_output_formats)}")
+
+
+def main():
+
+    args = parse_arguments()
 
     try:
-        simulation_data = parse_ltspice_txt(args.filepath)
+        # Read simulation data
+        simulation_data = read_simulation_data(args.filepath)
+
+        # Validate output format, if given
+        if args.output is not None:
+            validate_output_format(args.output)
 
         if args.available is True:
             print(get_all_signals(simulation_data))

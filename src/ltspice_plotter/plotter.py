@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from .txt_parser import get_signal_info, get_all_voltage_data, get_all_current_data
+from .parser import get_signal_info, get_all_voltage_data, get_all_current_data
 from .utils import signal_name_tex, auto_scale
 
 def plot_all_singls(simulation_data, fig_title=None, output_file=None):

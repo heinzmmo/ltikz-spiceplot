@@ -1,11 +1,12 @@
 """
-LTspice .txt parser module
+LTspice parser module
 """
 import pandas as pd
 from pathlib import Path
+from spicelib import RawRead
 
 
-def parse_ltspice_txt(filename):
+def parse_ltspice_txt(filename:str):
     """
     Load LTspice .txt export into pandas DataFrame
 
@@ -30,6 +31,34 @@ def parse_ltspice_txt(filename):
         return df
     except pd.errors.EmptyDataError:
         raise pd.errors.EmptyDataError(f"File is empty: {filename}")
+
+
+def parse_ltspice_raw(filename:str):
+    """
+    Load LTspice .raw export into pandas DataFrame
+
+    Arg: 
+        filename (str): Path to to LTspice .raw file 
+
+    Return: 
+        pd.DataFrame(): Parsed simulation data
+
+    Raises:
+        FileNotFoundError: If file doesn't exist
+    """
+
+    filepath = Path(filename)
+    if not filepath.exists():
+        raise FileNotFoundError(f"File not found: {filename}")
+
+    raw_file = RawRead(filepath)
+    signal_names = raw_file.get_trace_names()
+    data_dict = {}
+    for signal in signal_names:
+        trace = raw_file.get_trace(signal)
+        data_dict[signal] = trace.get_wave()
+        
+    return pd.DataFrame(data_dict)
 
 
 def get_time_column(df):

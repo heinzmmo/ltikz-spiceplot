@@ -3,7 +3,7 @@
 """
 
 import pandas as pd
-from .txt_parser import get_all_signals
+from .parser import get_all_signals
 
 def filter_data_frame(simulation_df, signals):
     """
