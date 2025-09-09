@@ -88,7 +88,7 @@ def auto_scale(signals_ax, base_unit_tex):
 
     max_val = max(abs(signals_ax.min()), abs(signals_ax.max()))
     for scale in sorted(prefixes.keys()):
-        if max_val >= scale:
+        if max_val > scale - (scale * 0.05):
             scaling_factor = scale
             prefix_tex = prefixes[scale]
     unit_tex = rf"{prefix_tex}{base_unit_tex}"
