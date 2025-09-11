@@ -4,7 +4,7 @@
 import argparse
 import sys 
 
-from .plotter import plot_all_singls
+from .plotter import plot_all_signals
 from .parser import parse_ltspice_txt, parse_ltspice_raw, get_all_signals
 from .utils import filter_data_frame
 
@@ -64,18 +64,18 @@ def parse_arguments():
 
 
 def read_simulation_data(filepath_arg:str):
-    if filepath_arg.endswith('.txt'):
-        return parse_ltspice_txt(filepath_arg)
-
-    elif filepath_arg.endswith('.raw'):
-        return parse_ltspice_raw(filepath_arg)
-
+    supported_input_formats = ('.raw', '.txt')
+    if filepath_arg.lower().endswith(supported_input_formats):
+        if filepath_arg.lower().endswith('.txt'):
+            return parse_ltspice_txt(filepath_arg)
+        elif filepath_arg.lower().endswith('.raw'):
+            return parse_ltspice_raw(filepath_arg)
     else:
         raise ValueError('Unsupported file type. Use .txt or .raw')
 
 
 def validate_output_format(output_arg:str):
-    supported_output_formats = ('.pdf', '.jpg', '.jpeg', '.png')
+    supported_output_formats = ('.pdf', '.jpg', '.jpeg', '.png', '.tex')
     if not output_arg.lower().endswith(supported_output_formats):
         raise ValueError(f"Unsupported format. Use: {', '.join(supported_output_formats)}")
 
@@ -98,9 +98,9 @@ def main():
         
         if args.signals is not None:
             filtered_data = filter_data_frame(simulation_data, args.signals)         
-            plot_all_singls(filtered_data,args.title, args.output)
+            plot_all_signals(filtered_data,args.title, args.output)
         else:
-            plot_all_singls(simulation_data, args.title, args.output)
+            plot_all_signals(simulation_data, args.title, args.output)
 
     # Error handeling for main.py
     except FileNotFoundError as e:

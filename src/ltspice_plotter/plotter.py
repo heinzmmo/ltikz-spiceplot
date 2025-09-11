@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 from .parser import get_signal_info, get_all_voltage_data, get_all_current_data
-from .utils import signal_name_tex, auto_scale
+from .utils import signal_name_tex, auto_scale, create_latex_preamble
 
-def plot_all_singls(simulation_data, fig_title=None, output_file=None):
+def plot_all_signals(simulation_data, fig_title=None, output_file=None):
     """
     Create basic plot of all signals 
 
@@ -77,7 +77,15 @@ def plot_all_singls(simulation_data, fig_title=None, output_file=None):
 
     # Output either as file (if output_file is given) or just show plot
     if output_file:
-        plt.savefig(output_file, dpi=300, bbox_inches='tight') 
-        print(f"Plot saved to {output_file}")
+        if output_file.lower().endswith('.tex'):
+            import matplot2tikz
+            matplot2tikz.save(output_file)
+            preamble_file = create_latex_preamble(output_file) 
+            print(f"Plot saved to: {output_file}")
+            print(f"Preamble saved to: {preamble_file}")
+
+        else:
+            plt.savefig(output_file, dpi=300, bbox_inches='tight') 
+            print(f"Plot saved to {output_file}")
     else:
         plt.show()

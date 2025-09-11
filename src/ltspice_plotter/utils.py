@@ -3,6 +3,7 @@
 """
 
 import pandas as pd
+from pathlib import Path
 from .parser import get_all_signals
 
 def filter_data_frame(simulation_df, signals):
@@ -94,3 +95,22 @@ def auto_scale(signals_ax, base_unit_tex):
     unit_tex = rf"{prefix_tex}{base_unit_tex}"
 
     return unit_tex, scaling_factor
+
+
+def create_latex_preamble(output_file):
+    """
+    Cretae a preamble .tex file for TikZ plots (matplot2tikz)
+    """
+    output_path = Path(output_file)
+    preamble_file = output_path.parent / "ltspice_plot_preamble.tex"
+
+    preamble_content = r"""\usepackage[utf8]{inputenc}
+\usepackage{pgfplots}
+\usepgfplotslibrary{groupplots,dateplot}
+\usetikzlibrary{patterns,shapes.arrows}
+\pgfplotsset{compat=newest}"""
+
+    with open(preamble_file, 'w') as f:
+        f.write(preamble_content)
+
+    return str(preamble_file)
