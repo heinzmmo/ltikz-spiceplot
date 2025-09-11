@@ -6,7 +6,102 @@ from pathlib import Path
 from spicelib import RawRead
 
 
-def parse_ltspice_txt(filename:str):
+def read_simulation_data(filepath_arg:str):
+    """
+    Parsing LTspice simulation data
+
+    Arg:
+        filepath_arg (str): Path to LTspice .raw/.txt file from argparser (CLI)
+
+    Return:
+        pd.DataFrame(): Parsed simulation data
+
+    Raises:
+        ValueError: If file is not a .raw or .txt
+    """
+    supported_input_formats = ('.raw', '.txt')
+
+    if filepath_arg.lower().endswith(supported_input_formats):
+        if filepath_arg.lower().endswith('.txt'):
+            return _parse_ltspice_txt(filepath_arg)
+        elif filepath_arg.lower().endswith('.raw'):
+            return _parse_ltspice_raw(filepath_arg)
+    else:
+        msg = 'Unsupported file type. Use .txt or .raw'
+        raise ValueError(msg)
+
+
+def get_all_signals(df):
+    """
+    Get all signal column names (excluding time)
+
+    Args: 
+        df (pd.DataFrame): Simulation data
+
+    Return:
+        list: List of all signal column names
+    """
+
+    time_col = _get_time_column(df) 
+    return [col for col in df.columns if col != time_col]
+
+
+def get_signal_info(df):
+    """
+    Get summary information about available signals
+
+    Args: 
+        df (pd.DataFrame): Simulation data
+
+    Retuns:
+        dict: Dictionary with signal information
+    """
+
+    time_col = _get_time_column(df)
+    voltages = _get_voltage_signals(df) 
+    currents = _get_current_signals(df)
+
+    return {
+        'time_column': time_col,
+        'voltage_signals': voltages,
+        'current_signals': currents,
+        'total_signals': len(voltages) + len(currents),
+        'time_range': (df[time_col].min(), df[time_col].max()),
+        'data_points': len(df)
+    }
+
+
+def get_all_voltage_data(df):
+    """
+    Get all voltage data as one dataFrame (vector)
+
+    Args: 
+        df (pd.DataFrame): Simulation data
+
+    Retuns:
+        dataFrame: DataFrame of all voltage data as vector
+    """
+
+    voltages = _get_voltage_signals(df)
+    return pd.concat([df[v] for v in voltages])
+
+
+def get_all_current_data(df):
+    """
+    Get all current data as one dataFrame (vector)
+
+    Args: 
+        df (pd.DataFrame): Simulation data
+
+    Retuns:
+        dataFrame: DataFrame of all current data as vector
+    """
+
+    currents = _get_current_signals(df)
+    return pd.concat([df[i] for i in currents])
+
+
+def _parse_ltspice_txt(filename:str):
     """
     Load LTspice .txt export into pandas DataFrame
 
@@ -33,7 +128,7 @@ def parse_ltspice_txt(filename:str):
         raise pd.errors.EmptyDataError(f"File is empty: {filename}")
 
 
-def parse_ltspice_raw(filename:str):
+def _parse_ltspice_raw(filename:str):
     """
     Load LTspice .raw export into pandas DataFrame
 
@@ -61,7 +156,7 @@ def parse_ltspice_raw(filename:str):
     return pd.DataFrame(data_dict)
 
 
-def get_time_column(df):
+def _get_time_column(df):
     """
     Get the time column for DataFrame
 
@@ -84,7 +179,7 @@ def get_time_column(df):
         return df.columns[0]
 
 
-def get_voltage_signals(df):
+def _get_voltage_signals(df):
     """
     Get all voltage signal column names
 
@@ -98,7 +193,7 @@ def get_voltage_signals(df):
     return [col for col in df.columns if col.startswith('V(')]
 
 
-def get_current_signals(df):
+def _get_current_signals(df):
     """
     Get all current signal column names
 
@@ -113,72 +208,3 @@ def get_current_signals(df):
     return [col for col in df.columns
             if col.startswith('I(') or col.startswith('Ix(')]
 
-
-def get_all_signals(df):
-    """
-    Get all signal column names (excluding time)
-
-    Args: 
-        df (pd.DataFrame): Simulation data
-
-    Return:
-        list: List of all signal column names
-    """
-
-    time_col = get_time_column(df) 
-    return [col for col in df.columns if col != time_col]
-
-
-def get_signal_info(df):
-    """
-    Get summary information about available signals
-
-    Args: 
-        df (pd.DataFrame): Simulation data
-
-    Retuns:
-        dict: Dictionary with signal information
-    """
-
-    time_col = get_time_column(df)
-    voltages = get_voltage_signals(df) 
-    currents = get_current_signals(df)
-
-    return {
-        'time_column': time_col,
-        'voltage_signals': voltages,
-        'current_signals': currents,
-        'total_signals': len(voltages) + len(currents),
-        'time_range': (df[time_col].min(), df[time_col].max()),
-        'data_points': len(df)
-    }
-
-
-def get_all_voltage_data(df):
-    """
-    Get all voltage data as one dataFrame (vector)
-
-    Args: 
-        df (pd.DataFrame): Simulation data
-
-    Retuns:
-        dataFrame: DataFrame of all voltage data as vector
-    """
-
-    voltages = get_voltage_signals(df)
-    return pd.concat([df[v] for v in voltages])
-
-
-def get_all_current_data(df):
-    """
-    Get all current data as one dataFrame (vector)
-
-    Args: 
-        df (pd.DataFrame): Simulation data
-
-    Retuns:
-        dataFrame: DataFrame of all current data as vector
-    """
-
-    currents = get_current_signals(df)
-    return pd.concat([df[i] for i in currents])

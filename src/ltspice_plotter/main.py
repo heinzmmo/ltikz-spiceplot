@@ -4,8 +4,8 @@
 import argparse
 import sys 
 
-from .plotter import plot_all_signals
-from .parser import parse_ltspice_txt, parse_ltspice_raw, get_all_signals
+from .plotter import figure_create, figure_show, figure_export
+from .parser import read_simulation_data, get_all_signals
 from .utils import filter_data_frame
 
 def parse_arguments():
@@ -63,23 +63,6 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def read_simulation_data(filepath_arg:str):
-    supported_input_formats = ('.raw', '.txt')
-    if filepath_arg.lower().endswith(supported_input_formats):
-        if filepath_arg.lower().endswith('.txt'):
-            return parse_ltspice_txt(filepath_arg)
-        elif filepath_arg.lower().endswith('.raw'):
-            return parse_ltspice_raw(filepath_arg)
-    else:
-        raise ValueError('Unsupported file type. Use .txt or .raw')
-
-
-def validate_output_format(output_arg:str):
-    supported_output_formats = ('.pdf', '.jpg', '.jpeg', '.png', '.tex')
-    if not output_arg.lower().endswith(supported_output_formats):
-        raise ValueError(f"Unsupported format. Use: {', '.join(supported_output_formats)}")
-
-
 def main():
 
     args = parse_arguments()
@@ -88,19 +71,22 @@ def main():
         # Read simulation data
         simulation_data = read_simulation_data(args.filepath)
 
-        # Validate output format, if given
-        if args.output is not None:
-            validate_output_format(args.output)
-
         if args.available is True:
             print(get_all_signals(simulation_data))
             sys.exit(0)
         
-        if args.signals is not None:
+        # Create figure (plots)
+        if args.signals:
             filtered_data = filter_data_frame(simulation_data, args.signals)         
-            plot_all_signals(filtered_data,args.title, args.output)
+            fig = figure_create(filtered_data, args.title)
         else:
-            plot_all_signals(simulation_data, args.title, args.output)
+            fig = figure_create(simulation_data, args.title)
+        
+        # Export or show figure
+        if args.output:
+            figure_export(fig, args.output)
+        elif args.output is None:
+            figure_show(fig)
 
     # Error handeling for main.py
     except FileNotFoundError as e:

@@ -46,7 +46,7 @@ def signal_name_tex(signal_name):
         if index.startswith('v'):
             index = index[1:]
 
-        return r'$V_{\mathrm{' + index + '}}$'
+        return r'$U_{\mathrm{' + index + '}}$'
 
     elif signal_name.startswith('I'):
         # Ix(u.:.) currents

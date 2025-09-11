@@ -1,15 +1,44 @@
 import matplotlib.pyplot as plt
-from .parser import get_signal_info, get_all_voltage_data, get_all_current_data
-from .utils import signal_name_tex, auto_scale, create_latex_preamble
+from .parser import (
+    get_signal_info,
+    get_all_voltage_data,
+    get_all_current_data
+)
+from .utils import (
+    signal_name_tex,
+    auto_scale,
+    create_latex_preamble
+)
 
-def plot_all_signals(simulation_data, fig_title=None, output_file=None):
+def figure_show(fig):
+    fig.show()
+
+
+def figure_export(fig, output_arg):
+    _validate_output_format(output_arg)
+
+    if output_arg.lower().endswith('.tex'):
+        import matplot2tikz
+        matplot2tikz.save(output_arg, figure=fig)
+        preamble_file = create_latex_preamble(output_arg) 
+        print(f"Plot saved to: {output_arg}")
+        print(f"Preamble saved to: {preamble_file}")
+    else:
+        fig.savefig(output_arg, dpi=300, bbox_inches='tight') 
+        print(f"Plot saved to {output_arg}")
+
+
+def figure_create(simulation_data, fig_title=None):
     """
     Create basic plot of all signals 
 
-    Arg: 
+    Args: 
         simulation_data (pd.DataFrame): Simulation data
         fig_title (str): Figure title
         output_file (str): Output file name (including data type)
+
+    Return:
+        plt.figure(): Figure containing plots        
     """
 
     info = get_signal_info(simulation_data)  # Dict containing name of columns
@@ -75,17 +104,12 @@ def plot_all_signals(simulation_data, fig_title=None, output_file=None):
     if fig_title:
         ax1.set_title(label=rf'{fig_title}')
 
-    # Output either as file (if output_file is given) or just show plot
-    if output_file:
-        if output_file.lower().endswith('.tex'):
-            import matplot2tikz
-            matplot2tikz.save(output_file)
-            preamble_file = create_latex_preamble(output_file) 
-            print(f"Plot saved to: {output_file}")
-            print(f"Preamble saved to: {preamble_file}")
+    return fig
 
-        else:
-            plt.savefig(output_file, dpi=300, bbox_inches='tight') 
-            print(f"Plot saved to {output_file}")
-    else:
-        plt.show()
+
+def _validate_output_format(output_arg:str):
+    supported_output_formats = ('.pdf', '.jpg', '.jpeg', '.png', '.tex')
+
+    if not output_arg.lower().endswith(supported_output_formats):
+        msg = f"Unsupported format. Use: {', '.join(supported_output_formats)}"
+        raise ValueError(msg)
