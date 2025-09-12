@@ -4,8 +4,6 @@
 import argparse
 import sys
 
-from numpy import mean 
-
 from .plotter import figure_create, figure_show, figure_export
 from .parser import read_simulation_data, get_all_signals
 from .utils import filter_data_frame

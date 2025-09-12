@@ -11,7 +11,8 @@ from .utils import (
 )
 
 def figure_show(fig):
-    fig.show()
+    cf = fig
+    plt.show()
 
 
 def figure_export(fig, output_arg):
