@@ -6,6 +6,7 @@ font.serif : Computer Modern
 
 figure.dpi : 150
 savefig.dpi : 300
+figure.figsize : 3.3, 2.625
 
 lines.linewidth : 1
 legend.frameon : False

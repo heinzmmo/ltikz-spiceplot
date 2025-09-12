@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import importlib.resources as pkg_resources
 import ltikz_spiceplot.plot_styles
 
+from itertools import cycle
+
 from .parser import (
     get_signal_info,
     get_all_voltage_data,
@@ -52,6 +54,9 @@ def figure_create(simulation_data, legend_pos_arg, fig_title_arg):
 
     _apply_plot_style('si')
 
+    voltage_colors = cycle(['#0066CC', '#4D94FF', '#00CCFF', '#6600CC', '#9933FF', '#003D7A'])
+    current_colors = cycle(['#FF3333', '#FF6600', '#CC3300', '#FF9900', '#FF1A8C', '#B3006E'])
+
     fig, ax1 = plt.subplots()
     ax2 = None
 
@@ -66,11 +71,11 @@ def figure_create(simulation_data, legend_pos_arg, fig_title_arg):
         voltage_unit_tex, voltage_scaling_factor = auto_scale(
                           get_all_voltage_data(simulation_data), r'\mathrm{V}') 
         ax1.set_ylabel(rf'$U/{voltage_unit_tex}$')
-        ax1.set_prop_cycle('color', ['b', 'g', 'c', 'm'])
         # Plot all voltages
         for voltage in info['voltage_signals']:
             scaled_voltage = simulation_data[voltage] / voltage_scaling_factor
             ax1.plot(scaled_time, scaled_voltage,
+                     color=next(voltage_colors),
                      label=rf'{signal_name_tex(voltage)}')
 
     # Current signals
@@ -85,11 +90,11 @@ def figure_create(simulation_data, legend_pos_arg, fig_title_arg):
             current_axis = ax1
 
         current_axis.set_ylabel(rf'$I/{current_unit_tex}$')
-        current_axis.set_prop_cycle('color', ['r', 'y', 'k', 'm'])
         # Plot all current signals
         for current in info['current_signals']:
             scaled_current = simulation_data[current] / current_scaling_factor
             current_axis.plot(scaled_time, scaled_current,
+                              color=next(current_colors),
                               label=rf'{signal_name_tex(current)}')
 
     # Legend
