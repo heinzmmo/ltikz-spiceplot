@@ -1,0 +1,10 @@
+text.usetex : True
+font.size : 11
+font.family : serif
+font.serif : Computer Modern
+
+figure.dpi : 150
+savefig.dpi : 300
+
+lines.linewidth : 1
+legend.frameon : False

@@ -1,4 +1,7 @@
 import matplotlib.pyplot as plt
+import importlib.resources as pkg_resources
+import ltikz_spiceplot.plot_styles
+
 from .parser import (
     get_signal_info,
     get_all_voltage_data,
@@ -46,12 +49,9 @@ def figure_create(simulation_data, legend_pos_arg, fig_title_arg):
     # Check which signal types are present
     has_voltage = len(info['voltage_signals']) > 0
     has_current = len(info['current_signals']) > 0
-    # Plot setup
-    plt.rcParams.update({
-        "text.usetex": True,
-        "font.size": 11,
-        "axes.labelsize": 14,
-    })
+
+    _apply_plot_style('si')
+
     fig, ax1 = plt.subplots()
     ax2 = None
 
@@ -114,3 +114,8 @@ def _validate_output_format(output_arg:str):
     if not output_arg.lower().endswith(supported_output_formats):
         msg = f"Unsupported format. Use: {', '.join(supported_output_formats)}"
         raise ValueError(msg)
+
+
+def _apply_plot_style(style:str):
+    with pkg_resources.path(ltikz_spiceplot.plot_styles, f"{style}.mplstyle") as style_path:
+        plt.style.use(style_path)

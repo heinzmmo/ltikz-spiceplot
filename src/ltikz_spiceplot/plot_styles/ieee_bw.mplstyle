@@ -1,0 +1,13 @@
+
+text.usetex : True
+font.size : 8
+font.family : serif
+font.serif : Times New Roman
+
+figure.dpi : 200
+figure.figsize : 3.3, 2.5
+savefig.dpi : 300
+
+lines.linewidth : 0.7
+axes.prop_cycle : cycler('ls', ['-', '--', '-.', ':'])
+legend.frameon : False
