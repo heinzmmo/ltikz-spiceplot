@@ -27,7 +27,7 @@ def read_simulation_data(filepath_arg:str):
         elif filepath_arg.lower().endswith('.raw'):
             return _parse_ltspice_raw(filepath_arg)
     else:
-        msg = 'Unsupported file type. Use .txt or .raw'
+        msg = 'Unsupported file type. Use .raw or .txt'
         raise ValueError(msg)
 
 

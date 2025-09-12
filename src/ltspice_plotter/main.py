@@ -4,24 +4,28 @@
 import argparse
 import sys
 
-from .plotter import figure_create, figure_show, figure_export
-from .parser import read_simulation_data, get_all_signals, get_signal_info
-from .utils import filter_data_frame
+from .parser import read_simulation_data
+
+from .handlers import(
+    handel_list_available_signals,
+    handle_plot_signals,
+    handle_output
+)
 
 def parse_arguments():
     """
     Parse CL arguments
     """
     epilog = r"""
-██╗  ████████╗██╗██╗  ██╗███████╗     ███████╗██████╗ ██╗ ██████╗███████╗██████╗ ██╗      ██████╗ ████████╗
-██║  ╚══██╔══╝██║██║ ██╔╝╚══███╔╝     ██╔════╝██╔══██╗██║██╔════╝██╔════╝██╔══██╗██║     ██╔═══██╗╚══██╔══╝
-██║     ██║   ██║█████╔╝   ███╔╝█████╗███████╗██████╔╝██║██║     █████╗  ██████╔╝██║     ██║   ██║   ██║   
-██║     ██║   ██║██╔═██╗  ███╔╝ ╚════╝╚════██║██╔═══╝ ██║██║     ██╔══╝  ██╔═══╝ ██║     ██║   ██║   ██║   
-███████╗██║   ██║██║  ██╗███████╗     ███████║██║     ██║╚██████╗███████╗██║     ███████╗╚██████╔╝   ██║   
-╚══════╝╚═╝   ╚═╝╚═╝  ╚═╝╚══════╝     ╚══════╝╚═╝     ╚═╝ ╚═════╝╚══════╝╚═╝     ╚══════╝ ╚═════╝    ╚═╝   
+  _   _____ _ _     _____    ____        _          ____  _       _   
+ | | |_   _(_) | __|__  /   / ___| _ __ (_) ___ ___|  _ \| | ___ | |_ 
+ | |   | | | | |/ /  / /____\___ \| '_ \| |/ __/ _ \ |_) | |/ _ \| __|
+ | |___| | | |   <  / /|_____|__) | |_) | | (_|  __/  __/| | (_) | |_ 
+ |_____|_| |_|_|\_\/____|   |____/| .__/|_|\___\___|_|   |_|\___/ \__|
+                                  |_|                                  
     """
     parser = argparse.ArgumentParser(
-        prog='lt2tikz',
+        prog='lt2tikzplot',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description="Plotting LTspice simulation data",
         epilog=epilog
@@ -48,11 +52,10 @@ def parse_arguments():
     )
 
     parser.add_argument(
-        "-lp",
-        "--legend-pos",
+        "--legend-loc",
         default='best',
-        metavar='LEGEND POSITION',
-        help="Position of legend."
+        metavar='LEGEND LOCATION',
+        help="Location of legend."
     )
 
     parser.add_argument(
@@ -81,32 +84,24 @@ def parse_arguments():
 
 
 def main():
-
     args = parse_arguments()
 
     try:
-        # Read simulation data
-        simulation_data = read_simulation_data(args.filepath)
+        # Parse simulation data
+        simulation_df = read_simulation_data(args.filepath)
 
         if args.available is True:
-            print(f"Total available singals: {get_signal_info(simulation_data)
-                  ['total_signals']}\nTrace names: {get_all_signals(simulation_data)}")
-            sys.exit(0)
-        
-        # Create figure (plots)
-        if args.signals:
-            filtered_data = filter_data_frame(simulation_data, args.signals)         
-            fig = figure_create(filtered_data,args.legend_pos, args.title)
+            handel_list_available_signals(simulation_df)     
         else:
-            fig = figure_create(simulation_data, args.legend_pos, args.title)
-        
-        # Export or show figure
-        if args.output:
-            figure_export(fig, args.output)
-        elif args.output is None:
-            figure_show(fig)
+            # Create figure
+            fig = handle_plot_signals(simulation_df,
+                                      args.signals,
+                                      args.title,
+                                      args.legend_loc) 
+            # Export or show figure
+            handle_output(fig, args.output)
 
-    # Error handeling for main.py
+    # Error handeling
     except FileNotFoundError as e:
         print(f"Error: {e}")
         sys.exit(1)
