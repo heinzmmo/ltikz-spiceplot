@@ -28,14 +28,14 @@ def figure_export(fig, output_arg):
         print(f"Plot saved to {output_arg}")
 
 
-def figure_create(simulation_data, fig_title=None):
+def figure_create(simulation_data, legend_pos_arg, fig_title_arg):
     """
     Create basic plot of all signals 
 
     Args: 
         simulation_data (pd.DataFrame): Simulation data
-        fig_title (str): Figure title
-        output_file (str): Output file name (including data type)
+        legend_pos_arg (str): Legends position - default: 'best'
+        fig_title_arg (str): Figure title
 
     Return:
         plt.figure(): Figure containing plots        
@@ -96,13 +96,13 @@ def figure_create(simulation_data, fig_title=None):
         # Combine the legends
         lines1, labels1 = ax1.get_legend_handles_labels()
         lines2, labels2 = ax2.get_legend_handles_labels()
-        ax1.legend(lines1 + lines2, labels1 + labels2, loc='best')
+        ax1.legend(lines1 + lines2, labels1 + labels2, loc=legend_pos_arg)
     elif has_voltage or has_current: 
-        ax1.legend(loc='best')
+        ax1.legend(loc=legend_pos_arg)
 
     # Figure titel
-    if fig_title:
-        ax1.set_title(label=rf'{fig_title}')
+    if fig_title_arg:
+        ax1.set_title(label=rf'{fig_title_arg}')
 
     return fig
 

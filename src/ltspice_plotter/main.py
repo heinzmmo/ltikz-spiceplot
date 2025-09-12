@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-import sys 
+import sys
+
+from numpy import mean 
 
 from .plotter import figure_create, figure_show, figure_export
 from .parser import read_simulation_data, get_all_signals
@@ -14,6 +16,7 @@ def parse_arguments():
     """
 
     parser = argparse.ArgumentParser(
+        prog='lt2tikz',
         description="Plotting LTspice simulation data",
         epilog="Example: ltspice-plot data.txt -s 'I(R2)' -o plot.pdf"
     )
@@ -36,6 +39,14 @@ def parse_arguments():
         default=None,
         nargs='+',
         help="Name of signals to plot. Must be identical to LTspice singal names"
+    )
+
+    parser.add_argument(
+        "-lp",
+        "--legend-pos",
+        default='best',
+        metavar='LEGEND POSITION',
+        help="Position of legend."
     )
 
     parser.add_argument(
@@ -78,9 +89,9 @@ def main():
         # Create figure (plots)
         if args.signals:
             filtered_data = filter_data_frame(simulation_data, args.signals)         
-            fig = figure_create(filtered_data, args.title)
+            fig = figure_create(filtered_data,args.legend_pos, args.title)
         else:
-            fig = figure_create(simulation_data, args.title)
+            fig = figure_create(simulation_data, args.legend_pos, args.title)
         
         # Export or show figure
         if args.output:
