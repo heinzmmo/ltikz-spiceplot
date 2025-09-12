@@ -5,18 +5,26 @@ import argparse
 import sys
 
 from .plotter import figure_create, figure_show, figure_export
-from .parser import read_simulation_data, get_all_signals
+from .parser import read_simulation_data, get_all_signals, get_signal_info
 from .utils import filter_data_frame
 
 def parse_arguments():
     """
     Parse CL arguments
     """
-
+    epilog = r"""
+██╗  ████████╗██╗██╗  ██╗███████╗     ███████╗██████╗ ██╗ ██████╗███████╗██████╗ ██╗      ██████╗ ████████╗
+██║  ╚══██╔══╝██║██║ ██╔╝╚══███╔╝     ██╔════╝██╔══██╗██║██╔════╝██╔════╝██╔══██╗██║     ██╔═══██╗╚══██╔══╝
+██║     ██║   ██║█████╔╝   ███╔╝█████╗███████╗██████╔╝██║██║     █████╗  ██████╔╝██║     ██║   ██║   ██║   
+██║     ██║   ██║██╔═██╗  ███╔╝ ╚════╝╚════██║██╔═══╝ ██║██║     ██╔══╝  ██╔═══╝ ██║     ██║   ██║   ██║   
+███████╗██║   ██║██║  ██╗███████╗     ███████║██║     ██║╚██████╗███████╗██║     ███████╗╚██████╔╝   ██║   
+╚══════╝╚═╝   ╚═╝╚═╝  ╚═╝╚══════╝     ╚══════╝╚═╝     ╚═╝ ╚═════╝╚══════╝╚═╝     ╚══════╝ ╚═════╝    ╚═╝   
+    """
     parser = argparse.ArgumentParser(
         prog='lt2tikz',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
         description="Plotting LTspice simulation data",
-        epilog="Example: ltspice-plot data.txt -s 'I(R2)' -o plot.pdf"
+        epilog=epilog
     )
 
     parser.add_argument(
@@ -81,7 +89,8 @@ def main():
         simulation_data = read_simulation_data(args.filepath)
 
         if args.available is True:
-            print(get_all_signals(simulation_data))
+            print(f"Total available singals: {get_signal_info(simulation_data)
+                  ['total_signals']}\nTrace names: {get_all_signals(simulation_data)}")
             sys.exit(0)
         
         # Create figure (plots)
