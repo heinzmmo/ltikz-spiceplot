@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ltspice-plotter"
+name = "ltikz-spiceplot"
 version = "0.1.0"
-description = "Bridge between LTspice and Matplotlib/tikzplotlib"
+description = "Bridge between LTspice and Matplotlib/matplot2tikz"
 authors = [{name = "Moritz Heinzmann"}]
 license = {text = "MIT"}
 readme = "README.md"
@@ -19,12 +19,8 @@ dependencies = [
     "matplot2tikz >= 0.4.1"
 ]
 
-optional-dependencies.dev = [
-    "pytest>=7.0"
-]
-
 [project.scripts]
-ltspice-plot = "ltspice_plotter.main:main"
+lt2tikzplot = "ltikz_spiceplot.main:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
