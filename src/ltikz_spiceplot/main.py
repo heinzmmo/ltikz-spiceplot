@@ -67,6 +67,13 @@ def parse_arguments():
     )
 
     parser.add_argument(
+        "--style",
+        default="si",
+        metavar="STYLE THEME",
+        help="Style theme for plot (Available: 'si', 'ieee', 'ieee_bw')"
+    )
+
+    parser.add_argument(
         "-o",
         "--output",
         default=None,
@@ -97,7 +104,8 @@ def main():
             fig = handle_plot_signals(simulation_df,
                                       args.signals,
                                       args.title,
-                                      args.legend_loc) 
+                                      args.legend_loc,
+                                      args.style) 
             # Export or show figure
             handle_output(fig, args.output)
 

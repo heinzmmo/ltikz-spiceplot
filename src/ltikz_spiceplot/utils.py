@@ -28,7 +28,7 @@ def filter_data_frame(simulation_df, signals):
     return pd.concat([simulation_df['time'], simulation_df[signals]], axis=1)
 
 
-def signal_name_tex(signal_name):
+def signal_name_tex(signal_name, style_arg='si'):
     """
     Convert the LTspice signal names into LaTeX math format
 
@@ -46,7 +46,10 @@ def signal_name_tex(signal_name):
         if index.startswith('v'):
             index = index[1:]
 
-        return r'$U_{\mathrm{' + index + '}}$'
+        if style_arg == 'si':
+            return r'$U_{\mathrm{' + index + '}}$'
+        elif style_arg in ['ieee', 'ieee_bw']:
+            return r'$V_{\mathrm{' + index + '}}$'
 
     elif signal_name.startswith('I'):
         # Ix(u.:.) currents
@@ -102,7 +105,7 @@ def create_latex_preamble(output_file):
     Cretae a preamble .tex file for TikZ plots (matplot2tikz)
     """
     output_path = Path(output_file)
-    preamble_file = output_path.parent / "ltspice_plot_preamble.tex"
+    preamble_file = output_path.parent / "ltikz_spiceplot_preamble.tex"
 
     preamble_content = r"""\usepackage[utf8]{inputenc}
 \usepackage{pgfplots}

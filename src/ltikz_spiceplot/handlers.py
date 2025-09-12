@@ -1,5 +1,7 @@
 import sys
 
+from matplotlib import style
+
 from .parser import (
     get_all_signals,
     get_signal_info
@@ -25,13 +27,16 @@ def handel_list_available_signals(simulation_df):
 def handle_plot_signals(simulation_df,
                         signals_arg=None,
                         title_arg=None,
-                        legend_loc_arg=None):
+                        legend_loc_arg=None,
+                        style_arg='si'):
     """Handle plotting with optional signal selection"""
     if signals_arg is None:
-        fig = figure_create(simulation_df, legend_loc_arg, title_arg)
+        fig = figure_create(simulation_df, legend_loc_arg, title_arg,
+                            style_arg)
     else:
         filtered_data = filter_data_frame(simulation_df, signals_arg)         
-        fig = figure_create(filtered_data, legend_loc_arg, title_arg)
+        fig = figure_create(filtered_data, legend_loc_arg, title_arg,
+                            style_arg)
 
     return fig
 

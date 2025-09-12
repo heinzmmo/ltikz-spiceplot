@@ -34,7 +34,7 @@ def figure_export(fig, output_arg):
         print(f"Plot saved to {output_arg}")
 
 
-def figure_create(simulation_data, legend_pos_arg, fig_title_arg):
+def figure_create(simulation_data, legend_pos_arg, fig_title_arg, style_arg):
     """
     Create basic plot of all signals 
 
@@ -46,16 +46,14 @@ def figure_create(simulation_data, legend_pos_arg, fig_title_arg):
     Return:
         plt.figure(): Figure containing plots        
     """
-
-    info = get_signal_info(simulation_data)  # Dict containing name of columns
-    # Check which signal types are present
+    info = get_signal_info(simulation_data)
     has_voltage = len(info['voltage_signals']) > 0
     has_current = len(info['current_signals']) > 0
-
-    _apply_plot_style('si')
-
-    voltage_colors = cycle(['#0066CC', '#4D94FF', '#00CCFF', '#6600CC', '#9933FF', '#003D7A'])
-    current_colors = cycle(['#FF3333', '#FF6600', '#CC3300', '#FF9900', '#FF1A8C', '#B3006E'])
+    voltage_colors = cycle(['#0066CC', '#4D94FF', '#00CCFF', '#6600CC',
+                            '#9933FF', '#003D7A'])
+    current_colors = cycle(['#FF3333', '#FF6600', '#CC3300', '#FF9900',
+                            '#FF1A8C', '#B3006E'])
+    _apply_plot_style(style_arg)
 
     fig, ax1 = plt.subplots()
     ax2 = None
@@ -64,19 +62,26 @@ def figure_create(simulation_data, legend_pos_arg, fig_title_arg):
     time_unit_tex, time_scaling_factor = auto_scale(
                            simulation_data[info['time_column']], r'\mathrm{s}')
     scaled_time = simulation_data[info['time_column']] / time_scaling_factor
-    ax1.set_xlabel(rf'$t/{time_unit_tex}$')
+    if style_arg == 'si':
+        ax1.set_xlabel(rf'$t/{time_unit_tex}$')
+    elif style_arg in ['ieee', 'ieee_bw']:
+        ax1.set_xlabel(rf'Time (${time_unit_tex}$)')
 
     # Voltage signals
     if has_voltage:
         voltage_unit_tex, voltage_scaling_factor = auto_scale(
                           get_all_voltage_data(simulation_data), r'\mathrm{V}') 
-        ax1.set_ylabel(rf'$U/{voltage_unit_tex}$')
+        if style_arg == 'si':
+            ax1.set_ylabel(rf'$U/{voltage_unit_tex}$')
+        elif style_arg in ['ieee', 'ieee_bw']:
+            ax1.set_ylabel(rf'Voltage (${voltage_unit_tex}$)')
+
         # Plot all voltages
         for voltage in info['voltage_signals']:
             scaled_voltage = simulation_data[voltage] / voltage_scaling_factor
             ax1.plot(scaled_time, scaled_voltage,
                      color=next(voltage_colors),
-                     label=rf'{signal_name_tex(voltage)}')
+                     label=rf'{signal_name_tex(voltage, style_arg)}')
 
     # Current signals
     if has_current:
@@ -89,7 +94,11 @@ def figure_create(simulation_data, legend_pos_arg, fig_title_arg):
         else:
             current_axis = ax1
 
-        current_axis.set_ylabel(rf'$I/{current_unit_tex}$')
+        if style_arg == 'si':
+            current_axis.set_ylabel(rf'$I/{current_unit_tex}$')
+        elif style_arg in ['ieee', 'ieee_bw']:
+            current_axis.set_ylabel(rf'Current (${current_unit_tex}$)')
+
         # Plot all current signals
         for current in info['current_signals']:
             scaled_current = simulation_data[current] / current_scaling_factor
