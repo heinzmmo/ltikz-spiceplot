@@ -1,3 +1,4 @@
+import numpy as np
 import matplotlib.pyplot as plt
 import importlib.resources as pkg_resources
 import ltikz_spiceplot.plot_styles
@@ -12,7 +13,8 @@ from .parser import (
 from .utils import (
     signal_name_tex,
     auto_scale,
-    create_latex_preamble
+    create_latex_preamble,
+    tranform_secondary_axis_data
 )
 
 def figure_show(fig):
@@ -21,6 +23,16 @@ def figure_show(fig):
 
 
 def figure_export(fig, output_arg):
+    """
+    Export figure
+
+    Args:
+        fig (plt.figure()): Figure to export
+        output_arg (str): Output file, including filename extension
+
+    Return:
+        None
+    """
     _validate_output_format(output_arg)
 
     if output_arg.lower().endswith('.tex'):
@@ -42,6 +54,7 @@ def figure_create(simulation_data, legend_pos_arg, fig_title_arg, style_arg):
         simulation_data (pd.DataFrame): Simulation data
         legend_pos_arg (str): Legends position - default: 'best'
         fig_title_arg (str): Figure title
+        style_arg (str): Plot style
 
     Return:
         plt.figure(): Figure containing plots        
@@ -57,8 +70,10 @@ def figure_create(simulation_data, legend_pos_arg, fig_title_arg, style_arg):
 
     fig, ax1 = plt.subplots()
     ax2 = None
+    voltage_ylims = None
+    current_ylims = None
 
-    # Time
+    # Time -------------------------------------------------------------------
     time_unit_tex, time_scaling_factor = auto_scale(
                            simulation_data[info['time_column']], r'\mathrm{s}')
     scaled_time = simulation_data[info['time_column']] / time_scaling_factor
@@ -67,53 +82,71 @@ def figure_create(simulation_data, legend_pos_arg, fig_title_arg, style_arg):
     elif style_arg in ['ieee', 'ieee_bw']:
         ax1.set_xlabel(rf'Time (${time_unit_tex}$)')
 
-    # Voltage signals
+    # Voltage signals --------------------------------------------------------
     if has_voltage:
         voltage_unit_tex, voltage_scaling_factor = auto_scale(
                           get_all_voltage_data(simulation_data), r'\mathrm{V}') 
+        voltage_ylims = _calc_ylims(np.concatenate([simulation_data[v] / voltage_scaling_factor 
+                                     for v in info['voltage_signals']]))
+        ax1.set_ylim(voltage_ylims)
+
         if style_arg == 'si':
             ax1.set_ylabel(rf'$U/{voltage_unit_tex}$')
         elif style_arg in ['ieee', 'ieee_bw']:
             ax1.set_ylabel(rf'Voltage (${voltage_unit_tex}$)')
 
-        # Plot all voltages
+        # Plot all voltage signals
         for voltage in info['voltage_signals']:
             scaled_voltage = simulation_data[voltage] / voltage_scaling_factor
             ax1.plot(scaled_time, scaled_voltage,
                      color=next(voltage_colors),
                      label=rf'{signal_name_tex(voltage, style_arg)}')
 
-    # Current signals
+    # Current signals --------------------------------------------------------
     if has_current:
         current_unit_tex, current_scaling_factor = auto_scale(
                           get_all_current_data(simulation_data), r'\mathrm{A}')
-        # Seconardy y-axis only if data has voltage and current signals
+        current_ylims = _calc_ylims(np.concatenate([simulation_data[i] / current_scaling_factor 
+                                     for i in info['current_signals']]))
+
         if has_voltage:
+            # Current and voltage signal
+            # Secondary axis only for ticks and label
             ax2 = ax1.twinx() 
-            current_axis = ax2
-        else:
-            current_axis = ax1
+            ax2.set_ylim(current_ylims)
 
-        if style_arg == 'si':
-            current_axis.set_ylabel(rf'$I/{current_unit_tex}$')
-        elif style_arg in ['ieee', 'ieee_bw']:
-            current_axis.set_ylabel(rf'Current (${current_unit_tex}$)')
+            if style_arg == 'si':
+                ax2.set_ylabel(rf'$I/{current_unit_tex}$')
+            elif style_arg in ['ieee', 'ieee_bw']:
+                ax2.set_ylabel(rf'Current (${current_unit_tex}$)')
 
-        # Plot all current signals
-        for current in info['current_signals']:
-            scaled_current = simulation_data[current] / current_scaling_factor
-            current_axis.plot(scaled_time, scaled_current,
+            # Plot all current signals
+            for current in info['current_signals']:
+                scaled_current = simulation_data[current] / current_scaling_factor
+                transformed_current = tranform_secondary_axis_data(scaled_current,
+                                                               current_ylims,
+                                                               voltage_ylims)
+                ax1.plot(scaled_time, transformed_current,
                               color=next(current_colors),
-                              label=rf'{signal_name_tex(current)}')
+                              label=rf'{signal_name_tex(current, style_arg)}')
+        # Only current
+        else:
+            ax1.set_ylim(current_ylims)
+
+            if style_arg == 'si':
+                ax1.set_ylabel(rf'$I/{current_unit_tex}$')
+            elif style_arg in ['ieee', 'ieee_bw']:
+                ax1.set_ylabel(rf'Current (${current_unit_tex}$)')
+
+            # Plot all current signals
+            for current in info['current_signals']:
+                scaled_current = simulation_data[current] / current_scaling_factor
+                ax1.plot(scaled_time, scaled_current,
+                              color=next(current_colors),
+                              label=rf'{signal_name_tex(current, style_arg)}')
 
     # Legend
-    if has_voltage and has_current and ax2 is not None:
-        # Combine the legends
-        lines1, labels1 = ax1.get_legend_handles_labels()
-        lines2, labels2 = ax2.get_legend_handles_labels()
-        ax1.legend(lines1 + lines2, labels1 + labels2, loc=legend_pos_arg)
-    elif has_voltage or has_current: 
-        ax1.legend(loc=legend_pos_arg)
+    ax1.legend(loc=legend_pos_arg)
 
     # Figure titel
     if fig_title_arg:
@@ -131,5 +164,29 @@ def _validate_output_format(output_arg:str):
 
 
 def _apply_plot_style(style:str):
-    with pkg_resources.path(ltikz_spiceplot.plot_styles, f"{style}.mplstyle") as style_path:
+    with pkg_resources.path(ltikz_spiceplot.plot_styles,
+                            f"{style}.mplstyle") as style_path:
         plt.style.use(style_path)
+
+
+def _calc_ylims(axis_data):
+    """
+    Calculate y-limits with 5% margin
+
+    Arg:
+        axis_data (np.array): Array containing all data from axis (voltage or 
+                              current)
+    """
+    max_abs = abs(max(axis_data, key=abs))
+    max_value = axis_data.max()
+    min_value = axis_data.min()
+   
+    if min_value < 0:
+        upper_lim = max_value + 2 * (max_abs * 0.05)
+        lower_lim = min_value - 2 * (max_abs * 0.05)
+    else:
+        upper_lim = max_value + (max_abs * 0.05)
+        lower_lim = min_value - (max_abs * 0.05)
+
+    return (lower_lim, upper_lim)
+

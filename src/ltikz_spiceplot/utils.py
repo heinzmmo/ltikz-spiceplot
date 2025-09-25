@@ -64,7 +64,7 @@ def signal_name_tex(signal_name, style_arg='si'):
         return signal_name
 
 
-def auto_scale(signals_ax, base_unit_tex):
+def auto_scale(signals_ax: pd.DataFrame, base_unit_tex: str):
     """
     Auto scaling the signal data
 
@@ -74,8 +74,8 @@ def auto_scale(signals_ax, base_unit_tex):
         base_unit_tex (str): Base unit of singal in LaTeX math format
     
     Returns:
-        unit_tex (str): Best fitting unit in LaTeX math format
-        scaling_factor (float): Units power of ten
+        str: Best fitting unit in LaTeX math format
+        float: Units power of ten
     """
 
     scaling_factor = 0
@@ -117,3 +117,16 @@ def create_latex_preamble(output_file):
         f.write(preamble_content)
 
     return str(preamble_file)
+
+
+def tranform_secondary_axis_data(signal, from_range, to_range):
+    """
+    Transform data from secondary axis to primary axis (matplot2tikz issue #32)
+    """
+    from_min, from_max = from_range
+    to_min, to_max = to_range
+    scale = (to_max - to_min) / (from_max - from_min)
+
+    transformed_signal = (signal - from_min) * scale + to_min
+
+    return transformed_signal
