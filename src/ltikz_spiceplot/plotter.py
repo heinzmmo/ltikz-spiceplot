@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import importlib.resources as pkg_resources
 import ltikz_spiceplot.plot_styles
 
+from pathlib import Path
 from itertools import cycle
 
 from .parser import (
@@ -37,7 +38,15 @@ def figure_export(fig, output_arg):
 
     if output_arg.lower().endswith('.tex'):
         import matplot2tikz
-        matplot2tikz.save(output_arg, figure=fig)
+        output_file = Path(output_arg)
+        tikz_code_raw = matplot2tikz.get_tikz_code(figure=fig)
+        # Remove tex code that producess arrow on seconadry axis
+        tikz_code = tikz_code_raw.replace(
+        r"""\begin{axis}[
+axis y line=right,""", r"\begin{axis}[")
+
+        with open(output_file, 'w') as f:
+            f.write(tikz_code)
         preamble_file = create_latex_preamble(output_arg) 
         print(f"Plot saved to: {output_arg}")
         print(f"Preamble saved to: {preamble_file}")
