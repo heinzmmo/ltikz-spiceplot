@@ -47,26 +47,26 @@ axis y line=right,""", r"\begin{axis}[")
 
         with open(output_file, 'w') as f:
             f.write(tikz_code)
-        preamble_file = create_latex_preamble(output_arg) 
+        preamble_file = create_latex_preamble(output_arg)
         print(f"Plot saved to: {output_arg}")
         print(f"Preamble saved to: {preamble_file}")
     else:
-        fig.savefig(output_arg, dpi=300, bbox_inches='tight') 
+        fig.savefig(output_arg, dpi=300, bbox_inches='tight')
         print(f"Plot saved to {output_arg}")
 
 
 def figure_create(simulation_data, legend_pos_arg, fig_title_arg, style_arg):
     """
-    Create basic plot of all signals 
+    Create basic plot of all signals
 
-    Args: 
+    Args:
         simulation_data (pd.DataFrame): Simulation data
         legend_pos_arg (str): Legends position - default: 'best'
         fig_title_arg (str): Figure title
         style_arg (str): Plot style
 
     Return:
-        plt.figure(): Figure containing plots        
+        plt.figure(): Figure containing plots
     """
     info = get_signal_info(simulation_data)
     has_voltage = len(info['voltage_signals']) > 0
@@ -94,8 +94,8 @@ def figure_create(simulation_data, legend_pos_arg, fig_title_arg, style_arg):
     # Voltage signals --------------------------------------------------------
     if has_voltage:
         voltage_unit_tex, voltage_scaling_factor = auto_scale(
-                          get_all_voltage_data(simulation_data), r'\mathrm{V}') 
-        voltage_ylims = _calc_ylims(np.concatenate([simulation_data[v] / voltage_scaling_factor 
+                          get_all_voltage_data(simulation_data), r'\mathrm{V}')
+        voltage_ylims = _calc_ylims(np.concatenate([simulation_data[v] / voltage_scaling_factor
                                      for v in info['voltage_signals']]))
         ax1.set_ylim(voltage_ylims)
 
@@ -115,13 +115,13 @@ def figure_create(simulation_data, legend_pos_arg, fig_title_arg, style_arg):
     if has_current:
         current_unit_tex, current_scaling_factor = auto_scale(
                           get_all_current_data(simulation_data), r'\mathrm{A}')
-        current_ylims = _calc_ylims(np.concatenate([simulation_data[i] / current_scaling_factor 
+        current_ylims = _calc_ylims(np.concatenate([simulation_data[i] / current_scaling_factor
                                      for i in info['current_signals']]))
 
         if has_voltage:
             # Current and voltage signal
             # Secondary axis only for ticks and label
-            ax2 = ax1.twinx() 
+            ax2 = ax1.twinx()
             ax2.set_ylim(current_ylims)
 
             if style_arg == 'si':
@@ -183,13 +183,13 @@ def _calc_ylims(axis_data):
     Calculate y-limits with 5% margin
 
     Arg:
-        axis_data (np.array): Array containing all data from axis (voltage or 
+        axis_data (np.array): Array containing all data from axis (voltage or
                               current)
     """
     max_abs = abs(max(axis_data, key=abs))
     max_value = axis_data.max()
     min_value = axis_data.min()
-   
+
     if min_value < 0:
         upper_lim = max_value + 2 * (max_abs * 0.05)
         lower_lim = min_value - 2 * (max_abs * 0.05)

@@ -35,14 +35,14 @@ def get_all_signals(df):
     """
     Get all signal column names (excluding time)
 
-    Args: 
+    Args:
         df (pd.DataFrame): Simulation data
 
     Return:
         list: List of all signal column names
     """
 
-    time_col = _get_time_column(df) 
+    time_col = _get_time_column(df)
     return [col for col in df.columns if col != time_col]
 
 
@@ -50,7 +50,7 @@ def get_signal_info(df):
     """
     Get summary information about available signals
 
-    Args: 
+    Args:
         df (pd.DataFrame): Simulation data
 
     Retuns:
@@ -58,7 +58,7 @@ def get_signal_info(df):
     """
 
     time_col = _get_time_column(df)
-    voltages = _get_voltage_signals(df) 
+    voltages = _get_voltage_signals(df)
     currents = _get_current_signals(df)
 
     return {
@@ -75,7 +75,7 @@ def get_all_voltage_data(df):
     """
     Get all voltage data as one dataFrame (vector)
 
-    Args: 
+    Args:
         df (pd.DataFrame): Simulation data
 
     Retuns:
@@ -90,7 +90,7 @@ def get_all_current_data(df):
     """
     Get all current data as one dataFrame (vector)
 
-    Args: 
+    Args:
         df (pd.DataFrame): Simulation data
 
     Retuns:
@@ -105,10 +105,10 @@ def _parse_ltspice_txt(filename:str):
     """
     Load LTspice .txt export into pandas DataFrame
 
-    Arg: 
-        filename (str): Path to to LTspice .txt file 
+    Arg:
+        filename (str): Path to to LTspice .txt file
 
-    Return: 
+    Return:
         pd.DataFrame(): Parsed simulation data
 
     Raises:
@@ -121,7 +121,7 @@ def _parse_ltspice_txt(filename:str):
     if not filepath.exists():
         raise FileNotFoundError(f"File not found: {filename}")
 
-    try: 
+    try:
         df = pd.read_csv(filepath, sep='\t')
         return df
     except pd.errors.EmptyDataError:
@@ -132,10 +132,10 @@ def _parse_ltspice_raw(filename:str):
     """
     Load LTspice .raw export into pandas DataFrame
 
-    Arg: 
-        filename (str): Path to to LTspice .raw file 
+    Arg:
+        filename (str): Path to to LTspice .raw file
 
-    Return: 
+    Return:
         pd.DataFrame(): Parsed simulation data
 
     Raises:
@@ -152,7 +152,7 @@ def _parse_ltspice_raw(filename:str):
     for signal in signal_names:
         trace = raw_file.get_trace(signal)
         data_dict[signal] = trace.get_wave()
-        
+
     return pd.DataFrame(data_dict)
 
 
@@ -169,7 +169,7 @@ def _get_time_column(df):
     Raises:
         ValueErros: If no time column found
     """
-    
+
     # Ltspice ueses 'time' als column name
     if 'time' in df.columns:
         return 'time'
@@ -183,13 +183,13 @@ def _get_voltage_signals(df):
     """
     Get all voltage signal column names
 
-    Args: 
+    Args:
         df (pd.DataFrame): Simulation data
 
     Return:
         list: List of all voltage column names (V(xxx))
     """
-    
+
     return [col for col in df.columns if col.startswith('V(')]
 
 
@@ -197,13 +197,13 @@ def _get_current_signals(df):
     """
     Get all current signal column names
 
-    Args: 
+    Args:
         df (pd.DataFrame): Simulation data
 
     Return:
         list: List of all current column names (V(xxx))
     """
-    # TODO check 
+    # TODO: check
     # Ix: IC model internal current
     return [col for col in df.columns
             if col.startswith('I(') or col.startswith('Ix(')]

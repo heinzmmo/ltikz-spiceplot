@@ -35,7 +35,7 @@ def parse_arguments():
         "filepath",
         help="Path to .txt file, created by LTspice"
     )
-    
+
     parser.add_argument(
         "-a",
         "--available",
@@ -98,14 +98,14 @@ def main():
         simulation_df = read_simulation_data(args.filepath)
 
         if args.available is True:
-            handel_list_available_signals(simulation_df)     
+            handel_list_available_signals(simulation_df)
         else:
             # Create figure
             fig = handle_plot_signals(simulation_df,
                                       args.signals,
                                       args.title,
                                       args.legend_loc,
-                                      args.style) 
+                                      args.style)
             # Export or show figure
             handle_output(fig, args.output)
 
@@ -122,6 +122,6 @@ def main():
         print(f"Unexpected error: {e}")
         sys.exit(1)
 
-    
+
 if __name__ == "__main__":
     main()

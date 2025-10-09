@@ -18,7 +18,7 @@ from .plotter import(
 
 
 def handel_list_available_signals(simulation_df):
-    """Handle --available flag: list all available signal names""" 
+    """Handle --available flag: list all available signal names"""
     print(f"Total available singals: {get_signal_info(simulation_df)
           ['total_signals']}\nTrace names: {get_all_signals(simulation_df)}")
     sys.exit(0)
@@ -34,7 +34,7 @@ def handle_plot_signals(simulation_df,
         fig = figure_create(simulation_df, legend_loc_arg, title_arg,
                             style_arg)
     else:
-        filtered_data = filter_data_frame(simulation_df, signals_arg)         
+        filtered_data = filter_data_frame(simulation_df, signals_arg)
         fig = figure_create(filtered_data, legend_loc_arg, title_arg,
                             style_arg)
 

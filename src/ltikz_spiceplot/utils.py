@@ -11,14 +11,14 @@ def filter_data_frame(simulation_df, signals):
     Filter only the desired signals from the data frame
 
     Args:
-        simulation_df (pd.dataFrame): Parsed simulation data 
-        singals (list): List of desired signal names 
+        simulation_df (pd.dataFrame): Parsed simulation data
+        singals (list): List of desired signal names
 
     Return:
         pd.dataFrame(): Filtered simulation data
 
     Raises:
-        VaulueError: Desired signal doesn't exist 
+        VaulueError: Desired signal doesn't exist
     """
     available_signals = get_all_signals(simulation_df)
     if not set(signals).issubset(available_signals):
@@ -35,7 +35,7 @@ def signal_name_tex(signal_name, style_arg='si'):
     Arg:
         signal_name (str): LTspice signal name
 
-    Return: 
+    Return:
         label_tex (str): singal label in LaTeX math format
     """
 
@@ -59,7 +59,7 @@ def signal_name_tex(signal_name, style_arg='si'):
 
         index = signal_name[1:].strip("()")
         return r'$I_{\mathrm{' + index[0] + '_{' + index[1:] + '}}}$'
-    
+
     else:
         return signal_name
 
@@ -72,7 +72,7 @@ def auto_scale(signals_ax: pd.DataFrame, base_unit_tex: str):
         signals_ax (pd.DataFrame): All signals from simulation data, that
                                    share one axis
         base_unit_tex (str): Base unit of singal in LaTeX math format
-    
+
     Returns:
         str: Best fitting unit in LaTeX math format
         float: Units power of ten
@@ -82,7 +82,7 @@ def auto_scale(signals_ax: pd.DataFrame, base_unit_tex: str):
     prefix_tex = []
     prefixes = {
         1e-12: (r'\mathrm{p}'),   # pico
-        1e-9:  (r'\mathrm{n}'),   # nano  
+        1e-9:  (r'\mathrm{n}'),   # nano
         1e-6:  (r'\mathrm{\mu}'), # micro
         1e-3:  (r'\mathrm{m}'),   # milli
         1:     (''),              # base
