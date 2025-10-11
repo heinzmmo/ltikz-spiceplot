@@ -83,7 +83,7 @@ def figure_create(simulation_data, legend_pos_arg, fig_title_arg, style_arg):
     time_unit_tex, time_scaling_factor = auto_scale(
                            simulation_data[info['time_column']], r'\mathrm{s}')
     scaled_time = simulation_data[info['time_column']] / time_scaling_factor
-    if style_arg == 'si':
+    if style_arg in ['de', 'de_bw']:
         ax1.set_xlabel(rf'$t/{time_unit_tex}$')
     elif style_arg in ['ieee', 'ieee_bw']:
         ax1.set_xlabel(rf'Time (${time_unit_tex}$)')
@@ -96,7 +96,7 @@ def figure_create(simulation_data, legend_pos_arg, fig_title_arg, style_arg):
                                      for v in info['voltage_signals']]))
         ax1.set_ylim(voltage_ylims)
 
-        if style_arg == 'si':
+        if style_arg in ['de', 'de_bw']:
             ax1.set_ylabel(rf'$U/{voltage_unit_tex}$')
         elif style_arg in ['ieee', 'ieee_bw']:
             ax1.set_ylabel(rf'Voltage (${voltage_unit_tex}$)')
@@ -123,7 +123,7 @@ def figure_create(simulation_data, legend_pos_arg, fig_title_arg, style_arg):
             ax2 = ax1.twinx()
             ax2.set_ylim(current_ylims)
 
-            if style_arg == 'si':
+            if style_arg in ['de', 'de_bw']:
                 ax2.set_ylabel(rf'$I/{current_unit_tex}$')
             elif style_arg in ['ieee', 'ieee_bw']:
                 ax2.set_ylabel(rf'Current (${current_unit_tex}$)')
@@ -143,7 +143,7 @@ def figure_create(simulation_data, legend_pos_arg, fig_title_arg, style_arg):
         else:
             ax1.set_ylim(current_ylims)
 
-            if style_arg == 'si':
+            if style_arg in ['de', 'de_bw']:
                 ax1.set_ylabel(rf'$I/{current_unit_tex}$')
             elif style_arg in ['ieee', 'ieee_bw']:
                 ax1.set_ylabel(rf'Current (${current_unit_tex}$)')
@@ -185,30 +185,24 @@ def _apply_plot_style(style:str):
     Return:
         tuple: Voltage and current color and linestyle cycles
     """
-    # Apply style
-    if style in ['ieee', 'ieee_bw', 'si']:
-        with pkg_resources.path(ltikz_spiceplot.plot_styles,
-                                            f"{style}.mplstyle") as style_path:
-            plt.style.use(style_path)
-    else:
-        msg = "Invalid style"
-        raise ValueError(msg)
-
-    voltage_colors = None
-    voltage_linestyles = None
-    current_colors = None
-    current_linestyles = None
-
-    if style in ['ieee', 'si']:
+    if style in ['ieee', 'de']:
         voltage_colors = cycle(['#000000', '#0021F3', '#009E73', '#9467BD'])
         current_colors = cycle(['#C10001', '#FF7F0E', '#F0E442', '#7F7F7F'])
         voltage_linestyles = cycle(['-'])
         current_linestyles = cycle(['-'])
-    elif style == 'ieee_bw':
+    elif style in ['ieee_bw', 'de_bw']:
         voltage_colors = cycle(['#000000'])
         current_colors = cycle(['#000000'])
         voltage_linestyles = cycle(['-', '--', '-.', ':'])
         current_linestyles = cycle([':', '-.', '--', '-'])
+    else:
+        msg = "Invalid style"
+        raise ValueError(msg)
+
+    # Apply style
+    with pkg_resources.path(ltikz_spiceplot.plot_styles,
+                            f"{style}.mplstyle") as style_path:
+            plt.style.use(style_path)
 
     return voltage_colors, voltage_linestyles, current_colors, current_linestyles
 

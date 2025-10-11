@@ -1,12 +1,12 @@
 text.usetex : True
 text.latex.preamble : \usepackage{amsmath}
-font.size : 8
+font.size : 11
 font.family : serif
-font.serif : Times New Roman
+font.serif : Computer Modern
 
 figure.dpi : 200
-figure.figsize : 3.3, 2.5
 savefig.dpi : 600
+figure.figsize : 3.3, 2.625
 
 lines.linewidth : 0.75
 legend.frameon : False

@@ -46,7 +46,7 @@ def signal_name_tex(signal_name, style_arg='si'):
         if index.startswith('v'):
             index = index[1:]
 
-        if style_arg == 'si':
+        if style_arg in ['de', 'de_bw']:
             return r'$U_{\mathrm{' + index + '}}$'
         elif style_arg in ['ieee', 'ieee_bw']:
             return r'$V_{\mathrm{' + index + '}}$'
