@@ -19,8 +19,19 @@ dependencies = [
     "matplot2tikz >= 0.4.1"
 ]
 
+[project.optional-dependencies]
+test = [
+    "pytest>=7.0.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
 [project.scripts]
-lt2tikzplot = "ltikz_spiceplot.main:main"
+ltplot = "ltikz_spiceplot.main:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

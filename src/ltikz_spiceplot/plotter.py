@@ -71,10 +71,10 @@ def figure_create(simulation_data, legend_pos_arg, fig_title_arg, style_arg):
     info = get_signal_info(simulation_data)
     has_voltage = len(info['voltage_signals']) > 0
     has_current = len(info['current_signals']) > 0
-    voltage_colors = cycle(['#0066CC', '#4D94FF', '#00CCFF', '#6600CC',
-                            '#9933FF', '#003D7A'])
-    current_colors = cycle(['#FF3333', '#FF6600', '#CC3300', '#FF9900',
-                            '#FF1A8C', '#B3006E'])
+
+    voltage_colors = cycle(['#000000', '#0021F3', '#009E73', '#9467BD'])
+    current_colors = cycle(['#C10001', '#FF7F0E', '#F0E442', '#7F7F7F'])
+
     _apply_plot_style(style_arg)
 
     fig, ax1 = plt.subplots()
