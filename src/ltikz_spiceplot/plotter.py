@@ -72,10 +72,7 @@ def figure_create(simulation_data, legend_pos_arg, fig_title_arg, style_arg):
     has_voltage = len(info['voltage_signals']) > 0
     has_current = len(info['current_signals']) > 0
 
-    voltage_colors = cycle(['#000000', '#0021F3', '#009E73', '#9467BD'])
-    current_colors = cycle(['#C10001', '#FF7F0E', '#F0E442', '#7F7F7F'])
-
-    _apply_plot_style(style_arg)
+    v_colors, v_linestyles, i_colors, i_linestyles = _apply_plot_style(style_arg)
 
     fig, ax1 = plt.subplots()
     ax2 = None
@@ -107,8 +104,10 @@ def figure_create(simulation_data, legend_pos_arg, fig_title_arg, style_arg):
         # Plot all voltage signals
         for voltage in info['voltage_signals']:
             scaled_voltage = simulation_data[voltage] / voltage_scaling_factor
-            ax1.plot(scaled_time, scaled_voltage,
-                     color=next(voltage_colors),
+            ax1.plot(scaled_time,
+                     scaled_voltage,
+                     color=next(v_colors),
+                     linestyle=next(v_linestyles),
                      label=rf'{signal_name_tex(voltage, style_arg)}')
 
     # Current signals --------------------------------------------------------
@@ -135,9 +134,11 @@ def figure_create(simulation_data, legend_pos_arg, fig_title_arg, style_arg):
                 transformed_current = tranform_secondary_axis_data(scaled_current,
                                                                current_ylims,
                                                                voltage_ylims)
-                ax1.plot(scaled_time, transformed_current,
-                              color=next(current_colors),
-                              label=rf'{signal_name_tex(current, style_arg)}')
+                ax1.plot(scaled_time,
+                         transformed_current,
+                         color=next(i_colors),
+                         linestyle=next(i_linestyles),
+                         label=rf'{signal_name_tex(current, style_arg)}')
         # Only current
         else:
             ax1.set_ylim(current_ylims)
@@ -150,9 +151,11 @@ def figure_create(simulation_data, legend_pos_arg, fig_title_arg, style_arg):
             # Plot all current signals
             for current in info['current_signals']:
                 scaled_current = simulation_data[current] / current_scaling_factor
-                ax1.plot(scaled_time, scaled_current,
-                              color=next(current_colors),
-                              label=rf'{signal_name_tex(current, style_arg)}')
+                ax1.plot(scaled_time,
+                         scaled_current,
+                         color=next(i_colors),
+                         linestyle=next(i_linestyles),
+                         label=rf'{signal_name_tex(current, style_arg)}')
 
     # Legend
     ax1.legend(loc=legend_pos_arg)
@@ -173,9 +176,41 @@ def _validate_output_format(output_arg:str):
 
 
 def _apply_plot_style(style:str):
-    with pkg_resources.path(ltikz_spiceplot.plot_styles,
-                            f"{style}.mplstyle") as style_path:
-        plt.style.use(style_path)
+    """
+    Apply plot style and return their color and linestyle cycles
+
+    Arg:
+        style (str): style name without format (.mplstyle)
+
+    Return:
+        tuple: Voltage and current color and linestyle cycles
+    """
+    # Apply style
+    if style in ['ieee', 'ieee_bw', 'si']:
+        with pkg_resources.path(ltikz_spiceplot.plot_styles,
+                                            f"{style}.mplstyle") as style_path:
+            plt.style.use(style_path)
+    else:
+        msg = "Invalid style"
+        raise ValueError(msg)
+
+    voltage_colors = None
+    voltage_linestyles = None
+    current_colors = None
+    current_linestyles = None
+
+    if style in ['ieee', 'si']:
+        voltage_colors = cycle(['#000000', '#0021F3', '#009E73', '#9467BD'])
+        current_colors = cycle(['#C10001', '#FF7F0E', '#F0E442', '#7F7F7F'])
+        voltage_linestyles = cycle(['-'])
+        current_linestyles = cycle(['-'])
+    elif style == 'ieee_bw':
+        voltage_colors = cycle(['#000000'])
+        current_colors = cycle(['#000000'])
+        voltage_linestyles = cycle(['-', '--', '-.', ':'])
+        current_linestyles = cycle([':', '-.', '--', '-'])
+
+    return voltage_colors, voltage_linestyles, current_colors, current_linestyles
 
 
 def _calc_ylims(axis_data):
