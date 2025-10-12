@@ -1,7 +1,3 @@
-"""
-@author: Moritz Heinzmann
-"""
-
 import pandas as pd
 from pathlib import Path
 from .parser import get_all_signals
