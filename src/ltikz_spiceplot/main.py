@@ -68,7 +68,7 @@ def parse_arguments():
 
     parser.add_argument(
         "--style",
-        default="si",
+        default="ieee",
         metavar="STYLE THEME",
         help="Style theme for plot (Available: 'si', 'ieee', 'ieee_bw')"
     )
