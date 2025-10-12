@@ -23,24 +23,39 @@ def parse_arguments():
  | |___| | | |   <  / /|_____|__) | |_) | | (_|  __/  __/| | (_) | |_ 
  |_____|_| |_|_|\_\/____|   |____/| .__/|_|\___\___|_|   |_|\___/ \__|
                                   |_|                                  
+
+Examples:
+  %(prog)s simulation.raw --available
+      List all available signals in the file
+
+  %(prog)s simulation.raw
+      Plot all signals (interactive matplotlib window)
+
+  %(prog)s simulation.raw -s V(out) I(R1) -o output.pdf
+      Plot specific signals and save as PDF
+
+  %(prog)s simulation.raw --style ieee -t "Buck Converter" -o plot.tex
+      Create TikZ plot with IEEE style and custom title
+
+For more information: https://github.com/heinzmmo/ltikz-spiceplot
     """
     parser = argparse.ArgumentParser(
-        prog='lt2tikzplot',
+        prog='ltplot',
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        description="Plotting LTspice simulation data",
+        description="Create plots from LTspice simulation data",
         epilog=epilog
     )
 
     parser.add_argument(
         "filepath",
-        help="Path to .txt file, created by LTspice"
+        help="Path to LTspice .raw (binary) or .txt (text export) file"
     )
 
     parser.add_argument(
         "-a",
         "--available",
         action='store_true',
-        help="Print available singal names"
+        help="List all available signal names and exit"
     )
 
     parser.add_argument(
@@ -48,29 +63,31 @@ def parse_arguments():
         "--signals",
         default=None,
         nargs='+',
-        help="Name of signals to plot. Must be identical to LTspice singal names"
+        metavar='SIGNAL',
+        help="Signal names to plot (e.g., 'V(out)' 'I(R1)'). Must match LTspice signal names / --available output exactly"
     )
 
     parser.add_argument(
         "--legend-loc",
         default='best',
-        metavar='LEGEND LOCATION',
-        help="Location of legend."
+        metavar='LOC',
+        help="Legend location: 'best', 'upper right', 'lower left', etc. (default: best)"
     )
 
     parser.add_argument(
         "-t",
         "--title",
         default=None,
-        metavar='FIG TITLE',
-        help="Title of the figure/plot"
+        metavar='TITLE',
+        help="Figure title (optional)"
     )
 
     parser.add_argument(
         "--style",
         default="ieee",
-        metavar="STYLE THEME",
-        help="Style theme for plot (Available: 'si', 'ieee', 'ieee_bw')"
+        choices=['de', 'ieee', 'ieee_bw', 'de_bw'],
+        metavar="STYLE",
+        help="Plot style: 'de' (U/I), 'ieee' (V/I), 'ieee_bw/de_bw' (black & white). Default: ieee"
     )
 
     parser.add_argument(
@@ -78,13 +95,13 @@ def parse_arguments():
         "--output",
         default=None,
         metavar='FILE',
-        help="Output filename. Supported formats: .pdf, .jpg, .jpeg, .png"
+        help="Output filename (.pdf, .tex). If omitted, shows interactive plot"
     )
 
     parser.add_argument(
         "--version",
         action="version",
-        version="ltspice-plotter v0.1"
+        version="%(prog)s v0.1.0-beta"
     )
 
     return parser.parse_args()
@@ -111,15 +128,16 @@ def main():
 
     # Error handeling
     except FileNotFoundError as e:
-        print(f"Error: {e}")
+        print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
 
     except ValueError as e:
-        print(f"Error: {e}")
+        print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
 
     except Exception as e:
         print(f"Unexpected error: {e}")
+        print("Please report this issue at: https://github.com/heinzmmo/ltikz-spiceplot/issues", file=sys.stderr)
         sys.exit(1)
 
 
