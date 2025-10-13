@@ -3,6 +3,8 @@
 
 A bridge between LTspice and Matplotlib/Matplot2TikZ for creating beautiful, publication-ready plots from LTspice simulation data.
 
+![](screenshot.png)
+
 ## What it is
 
 LTspice is a powerful circuit simulator, but its built-in plotting capabilities are limited and not suitable for publications or presentations. During my bachelor's degree in electrical engineering, I repeatedly wrote Python scripts to visualise LTspice results. These were almost always identical, or I used copies and modified things. So I thought I'd write a little tool instead of repeating myself over and over again.
