@@ -19,11 +19,6 @@ Thumbs.db
 # Project specific
 sandbox/
 
-# Output files
-*.pdf
-*.jpg
-*.png
-
 # Logs
 *.log
 
