@@ -18,10 +18,6 @@ Thumbs.db
 
 # Project specific
 sandbox/
-#sandbox/experiments.py
-#sandbox/temp*
-#sandbox/sample_data/*.txt
-#sandbox/output/
 
 # Output files
 *.pdf
