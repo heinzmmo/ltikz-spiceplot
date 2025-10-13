@@ -55,7 +55,11 @@ axis y line=right,""", r"\begin{axis}[")
         print(f"Plot saved to {output_arg}")
 
 
-def figure_create(simulation_data, legend_pos_arg, fig_title_arg, style_arg):
+def figure_create(simulation_data,
+                  legend_pos_arg,
+                  fig_title_arg,
+                  grid_arg,
+                  style_arg):
     """
     Create basic plot of all signals
 
@@ -163,6 +167,10 @@ def figure_create(simulation_data, legend_pos_arg, fig_title_arg, style_arg):
     # Figure titel
     if fig_title_arg:
         ax1.set_title(label=rf'{fig_title_arg}')
+
+    # Grid
+    if grid_arg:
+        ax1.grid(True, linewidth=0.5)
 
     return fig
 

@@ -83,6 +83,13 @@ For more information: https://github.com/heinzmmo/ltikz-spiceplot
     )
 
     parser.add_argument(
+        "-g",
+        "--grid",
+        action='store_true',
+        help="Show grid"
+    )
+
+    parser.add_argument(
         "--style",
         default="ieee",
         choices=['de', 'ieee', 'ieee_bw', 'de_bw'],
@@ -121,6 +128,7 @@ def main():
             fig = handle_plot_signals(simulation_df,
                                       args.signals,
                                       args.title,
+                                      args.grid,
                                       args.legend_loc,
                                       args.style)
             # Export or show figure
