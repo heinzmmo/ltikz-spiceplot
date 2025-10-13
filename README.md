@@ -137,11 +137,11 @@ options:
   --legend-loc LOC      Legend location: 'best', 'upper right', 'lower left', etc. (default: best)
   -t TITLE, --title TITLE
                         Figure title (optional)
+  -g, --grid            Show grid
   --style STYLE         Plot style: 'de' (U/I), 'ieee' (V/I), 'ieee_bw/de_bw' (black & white). Default: ieee
   -o FILE, --output FILE
                         Output filename (.pdf, .tex). If omitted, shows interactive plot
   --version             show program's version number and exit
-
 ```
 
 ## Status
