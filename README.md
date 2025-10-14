@@ -112,6 +112,7 @@ ltplot opamp.raw -a
 ltplot opamp.raw -s 'V(out)' 'I(R1)' --legend-loc 'lower left' --style de_bw -o example_2.tex
 
 # Compile document
+mkdir latex_build
 pdflatex -halt-on-error -output-directory latex_build main.tex
 ```
 
