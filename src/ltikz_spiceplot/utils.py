@@ -39,8 +39,11 @@ def signal_name_tex(signal_name, style_arg='si'):
     if signal_name.startswith('V'):
         index = signal_name[1:].strip("()")
         # For when net label is i.e. Vcc -> LTspice signal name: V(vcc)
-        if index.startswith('v'):
+        if index.startswith('v') or index.startswith('u'):
             index = index[1:]
+
+        if index[0] == '_':
+            index = index.replace('_','')
 
         if style_arg in ['de', 'de_bw']:
             return r'$U_{\mathrm{' + index + '}}$'
@@ -54,7 +57,9 @@ def signal_name_tex(signal_name, style_arg='si'):
             return r'$I_{\mathrm{' + index + '}}$'
 
         index = signal_name[1:].strip("()")
-        return r'$I_{\mathrm{' + index[0] + '_{' + index[1:] + '}}}$'
+        if index[1] == '_':
+            index = index.replace('_','')
+        return r'$I_{\mathrm{' + index[0] + '}' + r'_{\mathrm{' + index[1:] + '}}}$'
 
     else:
         return signal_name
