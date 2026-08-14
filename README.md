@@ -1,7 +1,7 @@
 # LTikZ-SpicePlot
 ![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg) ![Status](https://img.shields.io/badge/status-beta-yellow.svg) ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
-A bridge between LTspice and Matplotlib/Matplot2TikZ for creating beautiful, publication-ready plots from LTspice simulation data.
+A bridge between LTspice and Matplotlib/Matplot2TikZ for creating beautiful plots from LTspice simulation data.
 
 ![](screenshot.png)
 
